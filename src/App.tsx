@@ -10,6 +10,7 @@ import HomePage from 'pages/HomePage';
 const App = () => (
   <div>
     <Header></Header>
+    
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />}></Route>

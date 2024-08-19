@@ -58,6 +58,64 @@ section{
 .card-description{
   padding: 12px 16px 11px;
 }
+/* Central CSS file for Hamburger */
+
+.hamburger {
+  width: 15px;
+  height: 3px;
+  background-color: #333;
+  margin: 2px 10px;
+  transition: 0.4s;
+}
+
+.hamburger-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menu {
+  display: none;
+  flex-direction: column;
+  background-color: #f9f9f9;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  width: 250px;
+  height: calc(100vh - 39px);
+}
+
+.menu a {
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #333;
+  display: block;
+}
+
+.menu a:hover {
+  background-color: #ddd;
+}
+
+.show {
+  display: flex;
+}
+
+.rotate1 {
+  transform: rotate(-45deg) translate(-4px, 4px);
+}
+
+.rotate2 {
+  transform: rotate(45deg) translate(-6px, -6px);
+}
+
+.hide {
+  opacity: 0;
+}
+
 
 .footer{
   border-top: 1px solid #dedede;

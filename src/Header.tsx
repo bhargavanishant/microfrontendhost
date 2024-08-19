@@ -1,15 +1,18 @@
 import React from 'react'
 import './index.css'
 
-export default function Header (){
+import Hamburger from './Hamburger';
+
+export default function Header() {
     return (<header className="header">
-        <nav>
+        <Hamburger></Hamburger>
+        {/* <nav>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/services">Services</a></li>
                 <li><a href="/contact">Contact</a></li>
             </ul>
-        </nav>
+        </nav> */}
     </header>);
 }
