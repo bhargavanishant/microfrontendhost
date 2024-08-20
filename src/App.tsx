@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './index.css';
 import Header from './Header';
 import Footer from './Footer';
-import Product from 'pages/Product';
-import Categories from 'pages/Categories';
-import Debugging from 'second/Debugging';
+import NetworkMonitor, { NetworkMonitorProps } from './NetworkMonitor';
+import ErrorBoundary from './ErrorBoundary';
 
-import NetworkMonitor from './NetworkMonitor';
+// Lazy loading the micro frontend components
+const Product = lazy(() => import('pages/Product'));
+const Categories = lazy(() => import('pages/Categories'));
+const Debugging = lazy(() => import('second/Debugging'));
 
-const App = () => {
+const App: React.FC = () => {
   const [route, setRoute] = useState('Products'); // Default route is "Products"
 
-  const handleDataCapture = (data) => {
-    // We can send this data as payload and share it with our internal analytical servers to evaluate it better.
+  const handleDataCapture = (data: NetworkMonitorProps): void => {
     console.log(data);
   };
 
@@ -22,11 +23,30 @@ const App = () => {
     <>
       <Header setRoute={setRoute} currentRoute={route} />
       <section>
-        <NetworkMonitor onCapture={handleDataCapture} />
-        {route === 'Products' && <Product />}
-        {route === 'Categories' && <Categories />}
-        {route === 'Debugging' && <Debugging />}
-        {route === 'Contact' && <div>Contact Page</div>}
+        {/* Global Error Boundary for the Host */}
+        <ErrorBoundary>
+          <NetworkMonitor onCapture={handleDataCapture} />
+
+          {/* Use Suspense with Error Boundaries for each Micro Frontend */}
+          <Suspense fallback={<div>Loading...</div>}>
+            {route === 'Products' && (
+              <ErrorBoundary>
+                <Product />
+              </ErrorBoundary>
+            )}
+            {route === 'Categories' && (
+              <ErrorBoundary>
+                <Categories />
+              </ErrorBoundary>
+            )}
+            {route === 'Debugging' && (
+              <ErrorBoundary>
+                <Debugging />
+              </ErrorBoundary>
+            )}
+            {route === 'Contact' && <div>Contact Page</div>}
+          </Suspense>
+        </ErrorBoundary>
       </section>
       <Footer />
     </>

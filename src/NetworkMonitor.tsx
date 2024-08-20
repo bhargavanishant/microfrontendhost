@@ -9,40 +9,74 @@ interface NetworkEntry {
     body: string;
 }
 
-interface NetworkMonitorProps {
-    onCapture: (data: NetworkEntry[]) => void;
+interface TelemetryData {
+    ip: string;
+    browserVersion: string;
+    operatingSystem: string;
 }
+
+export interface NetworkMonitorProps {
+    onCapture: (data: {
+        networkData: NetworkEntry[],
+        telemetryData: TelemetryData
+    }) => void;
+}
+
+const getBrowserVersion = (): string => {
+    const userAgent = navigator.userAgent;
+    if (userAgent.indexOf('Firefox') > -1) {
+        return `Firefox ${navigator.userAgent.match(/Firefox\/([0-9]+)\./)?.[1] || ''}`;
+    }
+    if (userAgent.indexOf('Chrome') > -1) {
+        return `Chrome ${navigator.userAgent.match(/Chrome\/([0-9]+)\./)?.[1] || ''}`;
+    }
+    if (userAgent.indexOf('Safari') > -1) {
+        return `Safari ${navigator.userAgent.match(/Version\/([0-9]+)\./)?.[1] || ''}`;
+    }
+    if (userAgent.indexOf('MSIE') > -1 || !!document.DOCUMENT_NODE) {
+        return 'Internet Explorer';
+    }
+    return 'Unknown Browser';
+};
+
+const getOperatingSystem = (): string => {
+    const userAgent = navigator.userAgent;
+    if (userAgent.indexOf('Windows NT 10.0') > -1) return 'Windows 10';
+    if (userAgent.indexOf('Windows NT 6.3') > -1) return 'Windows 8.1';
+    if (userAgent.indexOf('Windows NT 6.2') > -1) return 'Windows 8';
+    if (userAgent.indexOf('Windows NT 6.1') > -1) return 'Windows 7';
+    if (userAgent.indexOf('Macintosh') > -1) return 'Mac OS';
+    if (userAgent.indexOf('X11') > -1) return 'Linux';
+    if (userAgent.indexOf('Android') > -1) return 'Android';
+    if (userAgent.indexOf('like Mac OS X') > -1) return 'iOS';
+    return 'Unknown OS';
+};
 
 export default function NetworkMonitor({ onCapture }: NetworkMonitorProps) {
     const [networkData, setNetworkData] = useState<NetworkEntry[]>([]);
+    const [telemetryData, setTelemetryData] = useState<TelemetryData | null>(null);
 
     useEffect(() => {
+        // Get browser version and operating system
+        const browserVersion = getBrowserVersion();
+        const operatingSystem = getOperatingSystem();
+        const ip = ''; // Placeholder for IP address
+        setTelemetryData({ ip, browserVersion, operatingSystem });
+
         const originalFetch = window.fetch;
-
-        // Function to check if the request is a REST API request
-        const isApiRequest = (url: string, method?: string) => {
-            // TODO: Incase of advance features
-            //const apiUrlPatterns = ['']; // Adjust these patterns as needed
-            const apiMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
-
-            // return apiUrlPatterns.some(pattern => url.includes(pattern)) &&
-            //        (method ? apiMethods.includes(method) : apiMethods.includes('GET'));
-            return method ? apiMethods.includes(method) : apiMethods.includes('GET');
-        };
-
         window.fetch = async (...args) => {
-            const url = args[0] as string;
-            const method = args[1]?.method || 'GET';
+            const startTime = performance.now();
+            const response = await originalFetch(...args);
+            const clonedResponse = response.clone();
 
-            if (isApiRequest(url, method)) {
-                const startTime = performance.now();
-                const response = await originalFetch(...args);
-                const clonedResponse = response.clone();
+            clonedResponse.text().then((body) => {
+                const duration = performance.now() - startTime;
+                const method = (args[1]?.method || 'GET') as string;
 
-                clonedResponse.text().then((body) => {
-                    const duration = performance.now() - startTime;
+                // Filter to include only REST API requests
+                if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase())) {
                     const entry: NetworkEntry = {
-                        url,
+                        url: args[0] as string,
                         method,
                         headers: args[1]?.headers,
                         status: response.status,
@@ -50,31 +84,31 @@ export default function NetworkMonitor({ onCapture }: NetworkMonitorProps) {
                         body,
                     };
                     setNetworkData((prevData) => [...prevData, entry]);
-                });
+                }
+            });
 
-                return response;
-            } else {
-                // Continue with the original fetch for non-API requests
-                return originalFetch(...args);
-            }
+            return response;
         };
 
+        // Log resource timings removed since we are focusing on REST API requests only
+
         return () => {
-            // No need to clean up fetch override since it's global for the app's lifetime
+            // Cleanup if needed
         };
     }, []);
 
     useEffect(() => {
-        if (networkData.length > 0) {
-            onCapture(networkData);
+        if (networkData.length > 0 && telemetryData) {
+            onCapture({ networkData, telemetryData });
         }
-    }, [networkData, onCapture]);
+    }, [networkData, telemetryData, onCapture]);
 
     return (
-        <></>
         // <div>
         //     <h3>Network Monitoring Active</h3>
-        //     <button onClick={() => console.log(networkData)}>Log Network Data</button>
+        //     <button onClick={() => console.log(networkData)}>Download Network Data</button>
         // </div>
+        <>
+        </>
     );
-}
+};
