@@ -19,22 +19,31 @@ module.exports = (_, argv) => ({
   devServer: {
     port: 3000,
     historyApiFallback: true,
+
+    // Move overlay under client
+    client: {
+      overlay: {
+        warnings: false, // Disable overlay for warnings
+        errors: false,   // Disable overlay for errors
+      },
+    },
+
     watchFiles: [path.resolve(__dirname, 'src')],
     onListening: function (devServer) {
-      const port = devServer.server.address().port
+      const port = devServer.server.address().port;
 
-      printCompilationMessage('compiling', port)
+      printCompilationMessage('compiling', port);
 
       devServer.compiler.hooks.done.tap('OutputMessagePlugin', (stats) => {
         setImmediate(() => {
           if (stats.hasErrors()) {
-            printCompilationMessage('failure', port)
+            printCompilationMessage('failure', port);
           } else {
-            printCompilationMessage('success', port)
+            printCompilationMessage('success', port);
           }
-        })
-      })
-    }
+        });
+      });
+    },
   },
 
   module: {
@@ -86,6 +95,6 @@ module.exports = (_, argv) => ({
     new HtmlWebPackPlugin({
       template: "./src/index.html",
     }),
-    new Dotenv()
+    new Dotenv(),
   ],
 });
