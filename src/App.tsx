@@ -1,27 +1,33 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
 
-import './index.css'
-import Header from './Header'
-import Footer from './Footer'
-import HomePage from 'pages/HomePage';
+import './index.css';
+import Header from './Header';
+import Footer from './Footer';
+import Product from 'pages/Product';
+import Categories from 'pages/Categories';
+import Debugging from 'second/Debugging';
 
-const App = () => (
-  <div>
-    <Header></Header>
-    
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />}></Route>
-        </Routes>
-      </BrowserRouter>
-    <Footer></Footer>
-  </div>
-)
-const rootElement = document.getElementById('app')
-if (!rootElement) throw new Error('Failed to find the root element')
+const App = () => {
+  const [route, setRoute] = useState('Products'); // Default route is "Products"
 
-const root = ReactDOM.createRoot(rootElement as HTMLElement)
+  return (
+    <>
+      <Header setRoute={setRoute} currentRoute={route} />
+      <section>
+        {route === 'Products' && <Product />}
+        {route === 'Categories' && <Categories />}
+        {route === 'Debugging' && <Debugging />}
+        {route === 'Contact' && <div>Contact Page</div>} {/* Add a Contact component if needed */}
+      </section>
+      <Footer />
+    </>
+  );
+};
 
-root.render(<App />)
+const rootElement = document.getElementById('app');
+if (!rootElement) throw new Error('Failed to find the root element');
+
+const root = ReactDOM.createRoot(rootElement as HTMLElement);
+
+root.render(<App />);
