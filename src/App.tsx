@@ -12,9 +12,11 @@ import { store } from "./store/store";
 import { updateNetworkErrorLogs } from "./store/networkErrorSlice";
 import "./index.css";
 import "react-json-view-lite/dist/index.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // Lazy loading the micro frontend components
 const Product = lazy(() => import("pages/Product"));
+const ProductFilters = lazy(() => import("pages/ProductFilters"));
 const Categories = lazy(() => import("pages/Categories"));
 const Debugging = lazy(() => import("second/Debugging"));
 
@@ -38,6 +40,7 @@ const App: React.FC = () => {
           <Suspense fallback={<div>Loading...</div>}>
             {route === "Products" && (
               <ErrorBoundary onErrorCapture={handleDataCapture}>
+                <ProductFilters />
                 <Product />
               </ErrorBoundary>
             )}
