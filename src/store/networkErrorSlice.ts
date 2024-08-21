@@ -21,7 +21,7 @@ export const counterSlice = createSlice({
         state.data.push({
           ...action.payload,
           time: {
-            timestamp: moment(),
+            timestamp: moment().format("DD-MM-YYYY HH:mm:ss"),
           },
         });
     },

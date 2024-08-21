@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface NetworkEntry {
     url: string;
@@ -15,11 +15,20 @@ export interface TelemetryData {
     operatingSystem: string;
 }
 
+export interface CustomErrorInfo {
+    message: string;
+    stack?: string;
+    componentStack: any;
+}
+
+export interface NetworkMonitorInfo {
+    networkData: NetworkEntry[];
+    telemetryData: TelemetryData;
+    errorInfo: CustomErrorInfo;
+}
+
 export interface NetworkMonitorProps {
-    onCapture: (data: {
-        networkData: NetworkEntry[],
-        telemetryData: TelemetryData
-    }) => void;
+    onCapture: (data: NetworkMonitorInfo) => void;
 }
 
 const getBrowserVersion = (): string => {
@@ -55,6 +64,7 @@ const getOperatingSystem = (): string => {
 export default function NetworkMonitor({ onCapture }: NetworkMonitorProps) {
     const [networkData, setNetworkData] = useState<NetworkEntry[]>([]);
     const [telemetryData, setTelemetryData] = useState<TelemetryData | null>(null);
+    const [errorInfo, setErrorInfo] = useState<CustomErrorInfo | null>(null);
 
     useEffect(() => {
         // Get browser version and operating system
@@ -64,7 +74,7 @@ export default function NetworkMonitor({ onCapture }: NetworkMonitorProps) {
         setTelemetryData({ ip, browserVersion, operatingSystem });
 
         const originalFetch = window.fetch;
-        window.fetch = async (...args) => {
+        window.fetch = async (...args: [RequestInfo, RequestInit?]) => {
             const startTime = performance.now();
             const response = await originalFetch(...args);
             const clonedResponse = response.clone();
@@ -90,25 +100,23 @@ export default function NetworkMonitor({ onCapture }: NetworkMonitorProps) {
             return response;
         };
 
-        // Log resource timings removed since we are focusing on REST API requests only
-
         return () => {
             // Cleanup if needed
         };
     }, []);
 
     useEffect(() => {
-        if (networkData.length > 0 && telemetryData) {
-            onCapture({ networkData, telemetryData });
-        }
-    }, [networkData, telemetryData, onCapture]);
+        if (networkData.length > 0 && telemetryData && !errorInfo) {
+            // Example errorInfo for demonstration
+            const exampleErrorInfo: CustomErrorInfo = {
+                message: '',
+                stack: '',
+                componentStack: '',
+            };
 
-    return (
-        // <div>
-        //     <h3>Network Monitoring Active</h3>
-        //     <button onClick={() => console.log(networkData)}>Download Network Data</button>
-        // </div>
-        <>
-        </>
-    );
-};
+            onCapture({ networkData, telemetryData, errorInfo: errorInfo || exampleErrorInfo });
+        }
+    }, [networkData, telemetryData, errorInfo, onCapture]);
+
+    return null; // No visible output from NetworkMonitor
+}

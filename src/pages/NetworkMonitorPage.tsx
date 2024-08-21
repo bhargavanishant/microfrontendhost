@@ -7,7 +7,6 @@ import {
   // darkStyles,
   defaultStyles,
 } from "react-json-view-lite";
-import moment from "moment";
 
 const NetworkMonitorPage = () => {
   const netWorkErrors = useSelector((state: RootState) => state.networkError);
@@ -25,8 +24,7 @@ const NetworkMonitorPage = () => {
           <>
             <div style={{ background: "skyblue" }}>
               <b>Report Time:</b>{" "}
-              {error?.time?.timestamp &&
-                moment(error?.time?.timestamp).format("DD-MM-YYYY HH:mm:ss")}
+              {error?.time?.timestamp && error?.time?.timestamp}
             </div>
             <JsonView
               data={error}
