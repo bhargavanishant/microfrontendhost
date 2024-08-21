@@ -32,28 +32,29 @@ const App: React.FC = () => {
     <>
       <Header setRoute={setRoute} currentRoute={route} />
       <section>
-          <ErrorBoundary onErrorCapture={handleDataCapture}>
-            <NetworkMonitor onCapture={handleDataCapture} />
-            {/* Use Suspense with Error Boundaries for each Micro Frontend */}
-            <Suspense fallback={<div>Loading...</div>}>
-              {route === 'Products' && (
-                <ErrorBoundary onErrorCapture={handleDataCapture}>
-                  <Product />
-                </ErrorBoundary>
-              )}
-              {route === 'Categories' && (
-                <ErrorBoundary onErrorCapture={handleDataCapture}>
-                  <Categories />
-                </ErrorBoundary>
-              )}
-              {route === 'Debugging' && (
-                <ErrorBoundary onErrorCapture={handleDataCapture}>
-                  <Debugging />
-                </ErrorBoundary>
-              )}
-              {route === 'Contact' && <div>Contact Page</div>}
-            </Suspense>
-          </ErrorBoundary>
+        <ErrorBoundary onErrorCapture={handleDataCapture}>
+          <NetworkMonitor onCapture={handleDataCapture} />
+          {/* Use Suspense with Error Boundaries for each Micro Frontend */}
+          <Suspense fallback={<div>Loading...</div>}>
+            {route === "Products" && (
+              <ErrorBoundary onErrorCapture={handleDataCapture}>
+                <Product />
+              </ErrorBoundary>
+            )}
+            {route === "Categories" && (
+              <ErrorBoundary onErrorCapture={handleDataCapture}>
+                <Categories />
+              </ErrorBoundary>
+            )}
+            {route === "Debugging" && (
+              <ErrorBoundary onErrorCapture={handleDataCapture}>
+                <Debugging />
+              </ErrorBoundary>
+            )}
+            {route === "Contact" && <div>Contact Page</div>}
+            {route === "NetworkMonitor" && <NetworkMonitorPage />}
+          </Suspense>
+        </ErrorBoundary>
       </section>
       <Footer />
     </>
