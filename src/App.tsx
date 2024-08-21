@@ -1,10 +1,15 @@
 import React, { useState, Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 
+// Mandatory CSS required by the Data Grid
+// import 'ag-grid-community/styles/ag-grid.css';
+// // Optional Theme applied to the Data Grid
+// import 'ag-grid-community/styles/ag-theme-quartz.css';
+
 import './index.css';
 import Header from './Header';
 import Footer from './Footer';
-import NetworkMonitor, { NetworkMonitorProps } from './NetworkMonitor';
+import NetworkMonitor, { NetworkEntry, TelemetryData } from './NetworkMonitor';
 import ErrorBoundary from './ErrorBoundary';
 
 // Lazy loading the micro frontend components
@@ -15,7 +20,8 @@ const Debugging = lazy(() => import('second/Debugging'));
 const App: React.FC = () => {
   const [route, setRoute] = useState('Products'); // Default route is "Products"
 
-  const handleDataCapture = (data: NetworkMonitorProps): void => {
+  // Adjust the function to match the expected type
+  const handleDataCapture = (data: { networkData: NetworkEntry[]; telemetryData: TelemetryData }): void => {
     console.log(data);
   };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-interface NetworkEntry {
+export interface NetworkEntry {
     url: string;
     method: string;
     headers: HeadersInit | undefined;
@@ -9,7 +9,7 @@ interface NetworkEntry {
     body: string;
 }
 
-interface TelemetryData {
+export interface TelemetryData {
     ip: string;
     browserVersion: string;
     operatingSystem: string;
