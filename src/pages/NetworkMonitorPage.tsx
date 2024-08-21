@@ -23,8 +23,7 @@ const NetworkMonitorPage = () => {
         return (
           <>
             <div style={{ background: "skyblue" }}>
-              <b>Report Time:</b>{" "}
-              {error?.time?.timestamp && error?.time?.timestamp}
+              <b>Report Time:</b> {error?.timestamp && error?.timestamp}
             </div>
             <JsonView
               data={error}
