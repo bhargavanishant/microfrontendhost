@@ -1,8 +1,14 @@
 import React, { ReactNode } from 'react';
+import { NetworkMonitorInfo, CustomErrorInfo } from './NetworkMonitor';
 
 // Class-based ErrorBoundary to handle errors
-class ErrorBoundaryClass extends React.Component<{ children: ReactNode }, { hasError: boolean }> {
-  constructor(props: { children: ReactNode }) {
+class ErrorBoundaryClass extends React.Component<{ 
+  children: ReactNode;
+  onErrorCapture: (networkMonitorProps: NetworkMonitorInfo) => void; 
+}, { hasError: boolean }> {
+  constructor(props: { children: ReactNode; 
+    onErrorCapture: (networkMonitorProps: NetworkMonitorInfo) => void }
+    ) {
     super(props);
     this.state = { hasError: false };
   }
@@ -12,7 +18,28 @@ class ErrorBoundaryClass extends React.Component<{ children: ReactNode }, { hasE
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    console.error('Error caught in ErrorBoundary:', error, errorInfo);
+    const errorDetails: CustomErrorInfo = {
+        message: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+    };
+
+    // Log the error
+    console.error('Error caught in ErrorBoundary:', error, errorDetails);
+
+    // Use default or empty data for other properties
+    const networkMonitorInfo: NetworkMonitorInfo = {
+      networkData: [], // Placeholder, update with actual network data if available
+      telemetryData: {
+        ip: '', // Placeholder for IP address
+        browserVersion: '', // Placeholder for browser version
+        operatingSystem: '', // Placeholder for operating system
+      },
+      errorInfo: errorDetails,
+    };
+
+    // Share the error info with the app via the onErrorCapture callback
+    this.props.onErrorCapture(networkMonitorInfo);
   }
 
   render() {
@@ -29,8 +56,12 @@ class ErrorBoundaryClass extends React.Component<{ children: ReactNode }, { hasE
 }
 
 // Functional wrapper component
-const ErrorBoundary: React.FC<{ children: ReactNode }> = ({ children }) => {
-  return <ErrorBoundaryClass>{children}</ErrorBoundaryClass>;
+const ErrorBoundary: React.FC<{ children: ReactNode; onErrorCapture: (networkMonitorProps: NetworkMonitorInfo) => void }> = ({ children, onErrorCapture }) => {
+  return (
+    <ErrorBoundaryClass onErrorCapture={onErrorCapture}>
+      {children}
+    </ErrorBoundaryClass>
+  );
 };
 
 export default ErrorBoundary;

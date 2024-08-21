@@ -1,15 +1,9 @@
 import React, { useState, Suspense, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
-
-// Mandatory CSS required by the Data Grid
-// import 'ag-grid-community/styles/ag-grid.css';
-// // Optional Theme applied to the Data Grid
-// import 'ag-grid-community/styles/ag-theme-quartz.css';
-
 import './index.css';
 import Header from './Header';
 import Footer from './Footer';
-import NetworkMonitor, { NetworkEntry, TelemetryData } from './NetworkMonitor';
+import NetworkMonitor, { ErrorInfo, NetworkEntry, NetworkMonitorProps, TelemetryData } from './NetworkMonitor';
 import ErrorBoundary from './ErrorBoundary';
 
 // Lazy loading the micro frontend components
@@ -21,7 +15,7 @@ const App: React.FC = () => {
   const [route, setRoute] = useState('Products'); // Default route is "Products"
 
   // Adjust the function to match the expected type
-  const handleDataCapture = (data: { networkData: NetworkEntry[]; telemetryData: TelemetryData }): void => {
+  const handleDataCapture = (data: NetworkMonitorInfo): void => {
     console.log(data);
   };
 
@@ -30,23 +24,23 @@ const App: React.FC = () => {
       <Header setRoute={setRoute} currentRoute={route} />
       <section>
         {/* Global Error Boundary for the Host */}
-        <ErrorBoundary>
+        <ErrorBoundary onErrorCapture={handleDataCapture}>
           <NetworkMonitor onCapture={handleDataCapture} />
 
           {/* Use Suspense with Error Boundaries for each Micro Frontend */}
           <Suspense fallback={<div>Loading...</div>}>
             {route === 'Products' && (
-              <ErrorBoundary>
+              <ErrorBoundary onErrorCapture={handleDataCapture}>
                 <Product />
               </ErrorBoundary>
             )}
             {route === 'Categories' && (
-              <ErrorBoundary>
+              <ErrorBoundary onErrorCapture={handleDataCapture}>
                 <Categories />
               </ErrorBoundary>
             )}
             {route === 'Debugging' && (
-              <ErrorBoundary>
+              <ErrorBoundary onErrorCapture={handleDataCapture}>
                 <Debugging />
               </ErrorBoundary>
             )}
@@ -63,5 +57,4 @@ const rootElement = document.getElementById('app');
 if (!rootElement) throw new Error('Failed to find the root element');
 
 const root = ReactDOM.createRoot(rootElement);
-
 root.render(<App />);
