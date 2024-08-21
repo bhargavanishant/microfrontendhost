@@ -2,15 +2,20 @@ import React, { useState, Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { Provider, useDispatch } from "react-redux";
 
-import { store } from "./store/store";
-import "./index.css";
+import NetworkMonitor, { NetworkEntry, TelemetryData } from "./NetworkMonitor";
+import ErrorBoundary from "./ErrorBoundary";
+
 import Header from "./Header";
 import Footer from "./Footer";
-import NetworkMonitor, { NetworkMonitorProps } from "./NetworkMonitor";
-import ErrorBoundary from "./ErrorBoundary";
 import NetworkMonitorPage from "./pages/NetworkMonitorPage";
+import { store } from "./store/store";
 import { updateNetworkErrorLogs } from "./store/networkErrorSlice";
+import "./index.css";
 import "react-json-view-lite/dist/index.css";
+// Mandatory CSS required by the Data Grid
+// import 'ag-grid-community/styles/ag-grid.css';
+// // Optional Theme applied to the Data Grid
+// import 'ag-grid-community/styles/ag-theme-quartz.css';
 
 // Lazy loading the micro frontend components
 const Product = lazy(() => import("pages/Product"));
@@ -21,7 +26,11 @@ const App: React.FC = () => {
   const [route, setRoute] = useState("Products"); // Default route is "Products"
   const dispatch = useDispatch();
 
-  const handleDataCapture = (data: NetworkMonitorProps): void => {
+  // Adjust the function to match the expected type
+  const handleDataCapture = (data: {
+    networkData: NetworkEntry[];
+    telemetryData: TelemetryData;
+  }): void => {
     console.log(data);
     dispatch(updateNetworkErrorLogs(data));
   };

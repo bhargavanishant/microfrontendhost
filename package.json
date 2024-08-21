@@ -21,6 +21,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "ag-grid-react": "^32.1.0",
     "autoprefixer": "^10.1.0",
     "babel-loader": "^8.2.2",
     "chrome-har": "^0.13.5",
