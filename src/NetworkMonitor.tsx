@@ -64,7 +64,6 @@ const getOperatingSystem = (): string => {
 export default function NetworkMonitor({ onCapture }: NetworkMonitorProps) {
     const [networkData, setNetworkData] = useState<NetworkEntry[]>([]);
     const [telemetryData, setTelemetryData] = useState<TelemetryData | null>(null);
-    const [errorInfo, setErrorInfo] = useState<CustomErrorInfo | null>(null);
 
     useEffect(() => {
         // Get browser version and operating system
@@ -106,17 +105,16 @@ export default function NetworkMonitor({ onCapture }: NetworkMonitorProps) {
     }, []);
 
     useEffect(() => {
-        if (networkData.length > 0 && telemetryData && !errorInfo) {
-            // Example errorInfo for demonstration
-            const exampleErrorInfo: CustomErrorInfo = {
-                message: '',
-                stack: '',
-                componentStack: '',
+        if (networkData.length > 0 && telemetryData) {
+            const existingErrorInfo = { 
+                message: '', 
+                stack: '', 
+                componentStack: '' 
             };
 
-            onCapture({ networkData, telemetryData, errorInfo: errorInfo || exampleErrorInfo });
+            onCapture({ networkData, telemetryData, errorInfo: existingErrorInfo });
         }
-    }, [networkData, telemetryData, errorInfo, onCapture]);
+    }, [networkData, telemetryData, null, onCapture]);
 
     return null; // No visible output from NetworkMonitor
 }

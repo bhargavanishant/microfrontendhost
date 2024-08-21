@@ -20,11 +20,11 @@ module.exports = (_, argv) => ({
     port: 3000,
     historyApiFallback: true,
 
-    // Move overlay under client
     client: {
       overlay: {
-        warnings: false, // Disable overlay for warnings
-        errors: false,   // Disable overlay for errors
+        errors: false,
+        warnings: false,
+        runtimeErrors: false,
       },
     },
 
