@@ -80,6 +80,7 @@ module.exports = (_, argv) => ({
       },
       exposes: {
         hostStyles: "./src/index.css",
+        "./ZustandStore": "./src/store.ts",
       },
       shared: {
         ...deps,
