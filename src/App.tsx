@@ -16,7 +16,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Lazy loading the micro frontend components
 const Product = lazy(() => import("pages/Product"));
-const ProductFilters = lazy(() => import("pages/ProductFilters"));
+const ProductFilters = lazy(() => import("filters/ProductFilters"));
 const Categories = lazy(() => import("pages/Categories"));
 const Debugging = lazy(() => import("second/Debugging"));
 
